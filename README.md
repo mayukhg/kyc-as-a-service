@@ -50,6 +50,40 @@ The platform implements a **Three-Layer Hybrid Architecture** designed for enter
 3. AI model executes scoring based on comprehensive feature set
 4. Results are cryptographically signed and attested
 
+**Federated Learning Integration**: The platform implements a privacy-preserving collaborative training workflow that allows multiple institutions to improve the GBM model without sharing raw customer data:
+
+**Phase 1 - Global Model Distribution**:
+- Initialize Global Gradient Boosting Model (GBM)
+- Generate cryptographic hash of model parameters
+- Record hash on blockchain for transparency
+- Securely dispatch model to all participating institutions
+
+**Phase 2 - Local Model Training** (Privacy-Preserving):
+- Each institution trains locally on proprietary customer data
+- Historical credit outcomes (Default/Repay labels) used for training
+- Model updates (gradients/deltas) generated without exposing raw data
+- Encrypted updates prepared for secure transmission
+
+**Phase 3 - Global Aggregation** (The Consensus):
+- Receive encrypted model updates from all clients
+- Weighted aggregation based on data volume/quality
+- Apply updates to create improved Global GBM
+- Hash and record new model version on blockchain
+
+**Benefits**:
+- **Privacy-First**: Raw customer data never leaves institutional boundaries
+- **Collaborative Intelligence**: Multiple institutions improve the model collectively
+- **Cold Start Solution**: Overcomes limited siloed data challenges
+- **Continuous Learning**: Model improves iteratively with each training round
+
+### Federated Learning & Blockchain Role
+
+**Model Provenance**: The blockchain proves which version of the Global GBM was used and when it was trained, creating an immutable audit trail.
+
+**Tamper-Proof Audit**: Ensures the KaaS provider cannot swap out a malicious model or tamper with training results, as every new model's fingerprint is locked on the ledger.
+
+**Shared Governance**: Provides a mechanism for all participants to agree on and audit the core predictive logic without requiring them to share their most valuable asset: raw customer data.
+
 ### Layer 3: Consumption Layer (API Service - Delivery Interface)
 
 **Purpose**: Provide secure, low-latency access to risk scores via RESTful API.
@@ -140,6 +174,7 @@ src/
 ├── components/          # React components
 │   ├── Hero.tsx        # Landing page hero section
 │   ├── ThreeLayerArchitecture.tsx  # Architecture visualization
+│   ├── FederatedLearning.tsx       # Federated learning workflow
 │   ├── LayerCard.tsx   # Individual layer cards
 │   ├── APIShowcase.tsx # API documentation display
 │   ├── TrustSection.tsx # Trust and security features
@@ -168,6 +203,7 @@ Navigate to **Project > Settings > Domains** in Lovable to connect your custom d
 ✅ **Verifiable AI Outputs** - Every score backed by blockchain attestation  
 ✅ **Sub-Second Response Times** - Optimized for high-throughput financial operations  
 ✅ **Privacy-First Design** - Off-chain storage for sensitive PII with GDPR compliance  
+✅ **Federated Learning** - Collaborative model training without sharing raw data  
 ✅ **Regulatory Ready** - Immutable audit trails for compliance requirements  
 ✅ **Enterprise Security** - OAuth 2.0, rate limiting, and cryptographic verification  
 ✅ **Beautiful UI** - Premium design with glassmorphism and smooth animations
@@ -180,6 +216,7 @@ Navigate to **Project > Settings > Domains** in Lovable to connect your custom d
 | **Performance** | Off-chain AI enables millisecond scoring |
 | **Scalability** | Microservice architecture scales horizontally |
 | **Privacy** | Raw data stays off-chain, only hashes on ledger |
+| **Collaboration** | Federated learning allows multi-institutional model improvement |
 | **Verifiability** | Cryptographic proofs for every transaction |
 
 ## API Integration Example
