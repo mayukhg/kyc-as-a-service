@@ -1,73 +1,231 @@
-# Welcome to your Lovable project
+# Hybrid AI-on-Blockchain KYC Solution
 
-## Project info
+## Overview
 
-**URL**: https://lovable.dev/projects/02aa7ea4-4b5a-4b8a-9e23-0cdb167bf3de
+This is a sophisticated **KYC as a Service (KaaS)** platform that delivers verifiable credit risk scoring through a hybrid architecture combining blockchain immutability with AI-powered intelligence. The solution enables banks and lending institutions to access real-time, auditable risk assessments backed by cryptographic verification.
 
-## How can I edit this code?
+## What This Solution Does
 
-There are several ways of editing your application.
+The platform provides:
 
-**Use Lovable**
+- **Verifiable Credit Risk Scoring**: AI-generated risk scores with blockchain-backed attestations
+- **Real-Time KYC Assessment**: Sub-second API responses for customer verification and creditworthiness
+- **Regulatory Compliance**: Immutable audit trails meeting financial regulatory requirements
+- **Privacy-Preserving Analytics**: Federated learning capabilities for multi-institutional collaboration
+- **Cryptographic Verification**: Every score includes blockchain hash for provenance verification
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/02aa7ea4-4b5a-4b8a-9e23-0cdb167bf3de) and start prompting.
+## Solution Architecture
 
-Changes made via Lovable will be committed automatically to this repo.
+The platform implements a **Three-Layer Hybrid Architecture** designed for enterprise-grade performance, security, and verifiability:
 
-**Use your preferred IDE**
+### Layer 1: Data Layer (Blockchain - Source of Truth)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+**Purpose**: Guarantee immutability and integrity of customer data for regulatory compliance and auditability.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+**Technology**: Permissioned blockchain (Hyperledger Fabric, Corda, or private Ethereum network)
 
-Follow these steps:
+**Data Stored**:
+- Cryptographic hashes of KYC documents and attestations
+- Verification timestamps and status records
+- Smart contracts for data access policies
+- Transaction summaries and audit trails
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+**Why Permissioned**: Ensures data confidentiality while allowing authorized financial institutions to verify integrity.
+
+### Layer 2: Computation Layer (Off-Chain AI - Intelligence Engine)
+
+**Purpose**: Execute high-speed, complex risk scoring using advanced machine learning models.
+
+**Technology**: Gradient Boosting Models (XGBoost/LightGBM)
+
+**Components**:
+- **Oracle Bridge**: Secure data retrieval from blockchain and off-chain storage
+- **AI Scoring Engine**: Real-time credit risk assessment
+- **Feature Service**: Transaction analysis and behavioral pattern recognition
+- **Federated Learning**: Privacy-preserving collaborative model training
+
+**Data Flow**: 
+1. Oracle retrieves verified data from blockchain and secure off-chain database
+2. Feature service calculates risk indicators (volatility, consistency, patterns)
+3. AI model executes scoring based on comprehensive feature set
+4. Results are cryptographically signed and attested
+
+### Layer 3: Consumption Layer (API Service - Delivery Interface)
+
+**Purpose**: Provide secure, low-latency access to risk scores via RESTful API.
+
+**Technology**: API Gateway with OAuth 2.0 authentication
+
+**Response Structure**:
+```json
+{
+  "risk_score": 785,
+  "eligibility": "High",
+  "top_driver": "Transaction Consistency",
+  "audit_hash": "0x4b7f9c2a...",
+  "model_version": "v2.3.1",
+  "timestamp": "2025-10-04T12:34:56Z"
+}
+```
+
+**Security Features**:
+- OAuth 2.0 enterprise authentication
+- Rate limiting and request routing
+- Cryptographic verification of model provenance
+- Real-time audit trail generation
+
+## Tech Stack
+
+### Frontend
+
+- **React 18.3.1** - Modern UI library with hooks
+- **TypeScript** - Type-safe development
+- **Vite** - Lightning-fast build tool and dev server
+- **Tailwind CSS** - Utility-first styling with custom design system
+- **shadcn-ui** - High-quality, accessible component library
+- **Lucide React** - Beautiful icon system
+
+### Design System
+
+- **Custom HSL Color Palette** - Semantic tokens for consistent theming
+- **Glassmorphism Effects** - Premium visual design
+- **Responsive Grid System** - Mobile-first architecture
+- **Animation System** - Smooth transitions and interactions
+
+### Key Libraries
+
+- **React Router DOM** - Client-side routing
+- **Tailwind Merge** - Utility class optimization
+- **Class Variance Authority** - Component variant management
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18+ and npm (or bun)
+- Git for version control
+
+### Installation
+
+```bash
+# Clone the repository
 git clone <YOUR_GIT_URL>
 
-# Step 2: Navigate to the project directory.
+# Navigate to project directory
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The application will be available at `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Building for Production
 
-**Use GitHub Codespaces**
+```bash
+# Create optimized production build
+npm run build
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Preview production build locally
+npm run preview
+```
 
-## What technologies are used for this project?
+## Project Structure
 
-This project is built with:
+```
+src/
+├── components/          # React components
+│   ├── Hero.tsx        # Landing page hero section
+│   ├── ThreeLayerArchitecture.tsx  # Architecture visualization
+│   ├── LayerCard.tsx   # Individual layer cards
+│   ├── APIShowcase.tsx # API documentation display
+│   ├── TrustSection.tsx # Trust and security features
+│   └── ui/             # shadcn-ui component library
+├── pages/              # Page components
+│   └── Index.tsx       # Home page
+├── assets/             # Static assets
+├── lib/                # Utility functions
+├── hooks/              # Custom React hooks
+├── index.css           # Global styles and design tokens
+└── main.tsx            # Application entry point
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Deployment
 
-## How can I deploy this project?
+### Lovable Platform (Recommended)
 
-Simply open [Lovable](https://lovable.dev/projects/02aa7ea4-4b5a-4b8a-9e23-0cdb167bf3de) and click on Share -> Publish.
+Simply click the **Publish** button in the Lovable editor to deploy instantly.
 
-## Can I connect a custom domain to my Lovable project?
+### Custom Domain
 
-Yes, you can!
+Navigate to **Project > Settings > Domains** in Lovable to connect your custom domain.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Key Features
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+✅ **Verifiable AI Outputs** - Every score backed by blockchain attestation  
+✅ **Sub-Second Response Times** - Optimized for high-throughput financial operations  
+✅ **Privacy-First Design** - Off-chain storage for sensitive PII with GDPR compliance  
+✅ **Regulatory Ready** - Immutable audit trails for compliance requirements  
+✅ **Enterprise Security** - OAuth 2.0, rate limiting, and cryptographic verification  
+✅ **Beautiful UI** - Premium design with glassmorphism and smooth animations
+
+## Architecture Benefits
+
+| Benefit | Implementation |
+|---------|---------------|
+| **Trust** | Blockchain immutability ensures data integrity |
+| **Performance** | Off-chain AI enables millisecond scoring |
+| **Scalability** | Microservice architecture scales horizontally |
+| **Privacy** | Raw data stays off-chain, only hashes on ledger |
+| **Verifiability** | Cryptographic proofs for every transaction |
+
+## API Integration Example
+
+```javascript
+POST https://api.kyc-platform.com/v1/kyc/risk-score
+
+Headers:
+  Authorization: Bearer <your_oauth_token>
+  Content-Type: application/json
+
+Body:
+{
+  "customer_id": "hash_abc123",
+  "data_points": ["transaction_history", "kyc_profile"]
+}
+
+Response:
+{
+  "risk_score": 785,
+  "eligibility": "High",
+  "top_driver": "Transaction Consistency",
+  "audit_hash": "0x4b7f9c2a8f1e3d5b...",
+  "model_version": "v2.3.1",
+  "timestamp": "2025-10-04T12:34:56Z"
+}
+```
+
+## Contributing
+
+This is a Lovable-generated project. To make changes:
+
+1. Use the [Lovable Editor](https://lovable.dev/projects/02aa7ea4-4b5a-4b8a-9e23-0cdb167bf3de)
+2. Clone and edit locally, then push changes
+3. Use GitHub Codespaces for cloud development
+
+All changes sync automatically between Lovable and your Git repository.
+
+## License
+
+All rights reserved.
+
+## Support
+
+For questions or issues, please refer to the [Lovable Documentation](https://docs.lovable.dev/).
+
+---
+
+**Built with [Lovable](https://lovable.dev)** - The AI-powered web application builder
