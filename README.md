@@ -4,6 +4,8 @@
 
 This is a sophisticated **KYC as a Service (KaaS)** platform that delivers verifiable credit risk scoring through a hybrid architecture combining blockchain immutability with AI-powered intelligence. The solution enables banks and lending institutions to access real-time, auditable risk assessments backed by cryptographic verification.
 
+> ⚡ **New here? Skip the setup.** Open **[`demo/architecture-mock.html`](demo/architecture-mock.html)** straight in your browser — no install, no build step — and click **"Run KYC Risk Check"** to watch a live-simulated request move through all three layers (ledger lookup → AI scoring → signed API response) end to end. It's the fastest way to see what this architecture actually does before you touch `npm install`. See [Interactive Demo](#-interactive-demo) below for details.
+
 ## What This Solution Does
 
 The platform provides:
@@ -108,6 +110,27 @@ The platform implements a **Three-Layer Hybrid Architecture** designed for enter
 - Cryptographic verification of model provenance
 - Real-time audit trail generation
 
+## 🚀 Interactive Demo
+
+Reading about a three-layer architecture is one thing — watching a request move through it is another. **[`demo/architecture-mock.html`](demo/architecture-mock.html)** is a single, dependency-free HTML file that recreates this app's full design system and walks through every section above, plus one thing the main app doesn't have yet: a **live pipeline simulation**.
+
+**Try it now:**
+
+```bash
+# No build, no install — just open it
+open demo/architecture-mock.html          # macOS
+# or: xdg-open demo/architecture-mock.html # Linux
+# or: start demo/architecture-mock.html    # Windows
+```
+
+Once it's open, scroll to **"See the Pipeline Run"**, enter a customer ID (or keep the default `hash_abc123`), and hit **Run KYC Risk Check**. You'll see, step by step:
+
+1. **Layer 1 (Data)** — the Oracle Bridge reading the customer's attestation hash off the ledger
+2. **Layer 2 (Computation)** — the Feature Service computing risk indicators and the GBM model scoring the request
+3. **Layer 3 (Consumption)** — a signed, audit-hashed JSON response rendered live, in the same shape as the [API example](#layer-3-consumption-layer-api-service---delivery-interface) above
+
+It's the quickest way to sanity-check the end-to-end flow — or to demo the concept to someone — before spinning up the full React app.
+
 ## Tech Stack
 
 ### Frontend
@@ -133,6 +156,8 @@ The platform implements a **Three-Layer Hybrid Architecture** designed for enter
 - **Class Variance Authority** - Component variant management
 
 ## Getting Started
+
+> Want to see it running in 10 seconds instead of setting up the dev environment? Jump to the [Interactive Demo](#-interactive-demo) first.
 
 ### Prerequisites
 
@@ -170,22 +195,25 @@ npm run preview
 ## Project Structure
 
 ```
-src/
-├── components/          # React components
-│   ├── Hero.tsx        # Landing page hero section
-│   ├── ThreeLayerArchitecture.tsx  # Architecture visualization
-│   ├── FederatedLearning.tsx       # Federated learning workflow
-│   ├── LayerCard.tsx   # Individual layer cards
-│   ├── APIShowcase.tsx # API documentation display
-│   ├── TrustSection.tsx # Trust and security features
-│   └── ui/             # shadcn-ui component library
-├── pages/              # Page components
-│   └── Index.tsx       # Home page
-├── assets/             # Static assets
-├── lib/                # Utility functions
-├── hooks/              # Custom React hooks
-├── index.css           # Global styles and design tokens
-└── main.tsx            # Application entry point
+.
+├── demo/
+│   └── architecture-mock.html   # zero-install interactive demo (see above)
+└── src/
+    ├── components/          # React components
+    │   ├── Hero.tsx        # Landing page hero section
+    │   ├── ThreeLayerArchitecture.tsx  # Architecture visualization
+    │   ├── FederatedLearning.tsx       # Federated learning workflow
+    │   ├── LayerCard.tsx   # Individual layer cards
+    │   ├── APIShowcase.tsx # API documentation display
+    │   ├── TrustSection.tsx # Trust and security features
+    │   └── ui/             # shadcn-ui component library
+    ├── pages/              # Page components
+    │   └── Index.tsx       # Home page
+    ├── assets/             # Static assets
+    ├── lib/                # Utility functions
+    ├── hooks/              # Custom React hooks
+    ├── index.css           # Global styles and design tokens
+    └── main.tsx            # Application entry point
 ```
 
 ## Deployment

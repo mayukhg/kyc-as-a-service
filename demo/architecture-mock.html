@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hybrid AI-on-Blockchain KYC — Architecture Mockup</title>
+<style>
+  :root{
+    --background:0 0% 100%; --foreground:222 47% 11%;
+    --card:0 0% 100%; --card-foreground:222 47% 11%;
+    --primary:221 83% 53%; --primary-glow:221 83% 63%; --primary-foreground:0 0% 100%;
+    --secondary:271 91% 65%; --secondary-foreground:0 0% 100%;
+    --accent:189 94% 43%; --accent-foreground:0 0% 100%;
+    --muted:220 13% 95%; --muted-foreground:220 9% 46%;
+    --border:220 13% 91%;
+    --radius:0.75rem;
+    --gradient-primary:linear-gradient(135deg, hsl(221 83% 53%), hsl(271 91% 65%));
+    --shadow-glow:0 0 40px hsl(221 83% 53% / .22);
+    --shadow-card:0 4px 20px hsl(220 13% 50% / .12);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --background:222 47% 6%; --foreground:0 0% 98%;
+      --card:222 47% 8%; --card-foreground:0 0% 98%;
+      --muted:222 47% 12%; --muted-foreground:215 20% 65%;
+      --border:222 47% 15%;
+      --shadow-card:0 4px 20px rgba(0,0,0,.35);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --background:222 47% 6%; --foreground:0 0% 98%;
+    --card:222 47% 8%; --card-foreground:0 0% 98%;
+    --muted:222 47% 12%; --muted-foreground:215 20% 65%;
+    --border:222 47% 15%;
+    --shadow-card:0 4px 20px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:hsl(var(--background)); color:hsl(var(--foreground));
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;
+  }
+  h1,h2,h3,h4{font-weight:800; letter-spacing:-0.02em; margin:0}
+  p{margin:0}
+  .container{max-width:1200px;margin:0 auto;padding:0 24px}
+  .gradient-text{background:var(--gradient-primary);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+  .glass{background:hsl(var(--card) / .65);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid hsl(var(--border) / .6)}
+  .card{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:var(--radius);box-shadow:var(--shadow-card)}
+  .muted{color:hsl(var(--muted-foreground))}
+  section{padding:88px 0}
+  .icon{width:1em;height:1em;display:inline-block;vertical-align:-0.15em}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;border-radius:999px;font-weight:700;font-size:15px;
+    padding:13px 26px;border:1px solid transparent;cursor:pointer;font-family:inherit;transition:transform .18s ease, filter .18s ease;
+    text-decoration:none;
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn.primary{background:var(--gradient-primary);color:#fff;box-shadow:var(--shadow-glow)}
+  .btn.primary:hover{filter:brightness(1.06)}
+  .btn.outline{background:transparent;border-color:hsl(var(--border));color:hsl(var(--foreground))}
+  .btn.outline:hover{background:hsl(var(--muted))}
+  .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600}
+
+  /* ---------- nav ---------- */
+  .topnav{position:sticky;top:0;z-index:50;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);background:hsl(var(--background) / .78);border-bottom:1px solid hsl(var(--border))}
+  .topnav .row{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px}
+  .brand .mark{width:30px;height:30px;border-radius:9px;background:var(--gradient-primary);display:grid;place-items:center;color:#fff}
+  .navlinks{display:flex;gap:28px;font-size:14px;font-weight:600}
+  .navlinks a{color:hsl(var(--muted-foreground));text-decoration:none;transition:color .15s}
+  .navlinks a:hover{color:hsl(var(--foreground))}
+  .themetoggle{border:1px solid hsl(var(--border));background:hsl(var(--card));border-radius:8px;padding:7px 9px;cursor:pointer;color:hsl(var(--foreground))}
+  @media(max-width:760px){ .navlinks{display:none} }
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;padding:110px 0 90px;overflow:hidden;text-align:center}
+  .hero::before{
+    content:"";position:absolute;inset:0;z-index:0;
+    background:
+      radial-gradient(480px 320px at 15% 15%, hsl(var(--primary) / .16), transparent 60%),
+      radial-gradient(560px 380px at 85% 30%, hsl(var(--secondary) / .14), transparent 60%);
+  }
+  .hero .inner{position:relative;z-index:1;max-width:820px;margin:0 auto}
+  .hero h1{font-size:clamp(34px,6vw,64px);line-height:1.05;margin:22px 0}
+  .hero p.lead{font-size:19px;color:hsl(var(--muted-foreground));max-width:640px;margin:0 auto 30px}
+  .hero .ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:34px}
+  .trustrow{display:flex;gap:26px;justify-content:center;flex-wrap:wrap;font-size:13.5px;color:hsl(var(--muted-foreground));font-weight:600}
+  .trustrow span{display:inline-flex;align-items:center;gap:7px}
+
+  /* ---------- section headers ---------- */
+  .shead{text-align:center;max-width:680px;margin:0 auto 52px}
+  .shead h2{font-size:clamp(28px,4vw,42px);margin-bottom:14px}
+  .shead p{font-size:17px;color:hsl(var(--muted-foreground))}
+  .eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:hsl(var(--primary));background:hsl(var(--primary) / .1);border:1px solid hsl(var(--primary) / .22);padding:6px 14px;border-radius:999px;margin-bottom:18px}
+
+  /* ---------- layer cards ---------- */
+  .layers{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+  @media(max-width:900px){ .layers{grid-template-columns:1fr} }
+  .layercard{padding:30px;position:relative;overflow:hidden}
+  .layercard .lic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;margin-bottom:20px;font-size:24px}
+  .layercard.p1 .lic{background:hsl(var(--primary) / .12);color:hsl(var(--primary))}
+  .layercard.p2 .lic{background:hsl(var(--secondary) / .12);color:hsl(var(--secondary))}
+  .layercard.p3 .lic{background:hsl(var(--accent) / .12);color:hsl(var(--accent))}
+  .layercard h3{font-size:21px;margin-bottom:3px}
+  .layercard .sub{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:hsl(var(--muted-foreground));margin-bottom:14px}
+  .layercard .desc{color:hsl(var(--muted-foreground));font-size:14.5px;margin-bottom:18px}
+  .layercard ul{list-style:none;margin:0;padding:16px 0 0;border-top:1px solid hsl(var(--border));display:flex;flex-direction:column;gap:11px}
+  .layercard li{display:flex;gap:10px;font-size:13.5px;align-items:flex-start}
+  .layercard li::before{content:"";width:6px;height:6px;border-radius:50%;margin-top:6px;flex:0 0 auto;background:currentColor}
+  .layercard.p1 li::before{color:hsl(var(--primary))}
+  .layercard.p2 li::before{color:hsl(var(--secondary))}
+  .layercard.p3 li::before{color:hsl(var(--accent))}
+
+  .flowbar{margin-top:40px;padding:30px;display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:10px;text-align:center}
+  @media(max-width:700px){ .flowbar{grid-template-columns:1fr} .flowbar .arrow{display:none} }
+  .flowbar .step .n{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;margin:0 auto 8px;font-weight:800}
+  .flowbar .step:nth-child(1) .n{background:hsl(var(--primary)/.12);color:hsl(var(--primary))}
+  .flowbar .step:nth-child(3) .n{background:hsl(var(--secondary)/.12);color:hsl(var(--secondary))}
+  .flowbar .step:nth-child(5) .n{background:hsl(var(--accent)/.12);color:hsl(var(--accent))}
+  .flowbar .step p{font-size:13.5px;font-weight:600}
+  .flowbar .arrow{color:hsl(var(--muted-foreground))}
+
+  /* ---------- live demo ---------- */
+  .demo{background:hsl(var(--muted) / .5)}
+  .demowrap{padding:34px;display:grid;grid-template-columns:1fr 1fr;gap:0}
+  @media(max-width:880px){ .demowrap{grid-template-columns:1fr} }
+  .demo-left{padding-right:34px;border-right:1px solid hsl(var(--border))}
+  @media(max-width:880px){ .demo-left{padding-right:0;border-right:0;padding-bottom:30px;border-bottom:1px solid hsl(var(--border));margin-bottom:30px} }
+  .demo-left label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:hsl(var(--muted-foreground));display:block;margin-bottom:8px}
+  .demo-left input{width:100%;padding:12px 14px;border-radius:8px;border:1px solid hsl(var(--border));background:hsl(var(--background));color:hsl(var(--foreground));font-family:inherit;font-size:14px;margin-bottom:18px}
+  .demo-left .points{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px}
+  .chip{font-size:12px;font-weight:600;padding:6px 11px;border-radius:999px;background:hsl(var(--primary)/.1);color:hsl(var(--primary));border:1px solid hsl(var(--primary)/.2)}
+  .runbtn{width:100%;justify-content:center}
+  .runbtn:disabled{opacity:.6;cursor:default;transform:none}
+
+  .tracelog{font-family:ui-monospace,"SF Mono","Cascadia Code",Consolas,monospace;font-size:12.3px;min-height:150px}
+  .tracelog .entry{display:flex;gap:8px;padding:7px 0;border-bottom:1px dashed hsl(var(--border));animation:pop .3s ease}
+  @keyframes pop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .tracelog .tag{flex:0 0 auto;font-weight:800;font-size:10px;padding:2px 6px;border-radius:4px;height:fit-content}
+  .tracelog .tag.l1{background:hsl(var(--primary)/.15);color:hsl(var(--primary))}
+  .tracelog .tag.l2{background:hsl(var(--secondary)/.15);color:hsl(var(--secondary))}
+  .tracelog .tag.l3{background:hsl(var(--accent)/.15);color:hsl(var(--accent))}
+  .tracelog .txt{color:hsl(var(--foreground)/.85)}
+  .tracelog .placeholder{color:hsl(var(--muted-foreground));font-family:inherit;font-size:13.5px;padding-top:6px}
+
+  .resultcard{margin-top:18px;border-radius:10px;border:1px solid hsl(var(--border));background:hsl(var(--background));padding:16px 18px;display:none}
+  .resultcard.show{display:block;animation:pop .35s ease}
+  .resultcard .rt{font-weight:800;font-size:13px;margin-bottom:10px;display:flex;align-items:center;gap:8px;color:hsl(var(--accent))}
+  .resultgrid{display:grid;grid-template-columns:auto 1fr;gap:7px 16px;font-size:13px}
+  .resultgrid .k{color:hsl(var(--muted-foreground));font-weight:600}
+  .resultgrid .v{font-weight:700;text-align:right;font-family:ui-monospace,"SF Mono",Consolas,monospace}
+  .elig{padding:2px 9px;border-radius:6px;font-size:11.5px;font-weight:800}
+  .elig.high{background:hsl(150 70% 40% / .15);color:hsl(150 70% 32%)}
+  .elig.medium{background:hsl(38 92% 50% / .15);color:hsl(30 80% 40%)}
+
+  /* ---------- federated learning ---------- */
+  .phase{padding:30px;display:flex;gap:28px;align-items:flex-start;margin-bottom:22px}
+  @media(max-width:820px){ .phase{flex-direction:column} }
+  .phase .picon{width:76px;height:76px;border-radius:18px;display:grid;place-items:center;font-size:32px;margin-bottom:10px;color:hsl(var(--primary))}
+  .phase.ph0 .picon{background:linear-gradient(135deg, hsl(var(--primary)/.2), hsl(var(--primary)/.05))}
+  .phase.ph1 .picon{background:linear-gradient(135deg, hsl(var(--secondary)/.2), hsl(var(--secondary)/.05));color:hsl(var(--secondary))}
+  .phase.ph2 .picon{background:linear-gradient(135deg, hsl(var(--accent)/.2), hsl(var(--accent)/.05));color:hsl(var(--accent))}
+  .phase .pnum{font-size:44px;font-weight:800;color:hsl(var(--primary)/.18)}
+  .phase .content{flex:1}
+  .phase .eyebrow-sm{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:hsl(var(--primary))}
+  .phase h3{font-size:23px;margin:6px 0}
+  .phase .desc{color:hsl(var(--muted-foreground));font-size:14.5px;margin-bottom:16px}
+  .steps{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:600px){ .steps{grid-template-columns:1fr} }
+  .step-item{display:flex;gap:10px;padding:10px 12px;border-radius:8px;background:hsl(var(--muted)/.5);border:1px solid hsl(var(--border))}
+  .step-item .sn{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:hsl(var(--primary)/.18);color:hsl(var(--primary));font-size:10.5px;font-weight:800;display:grid;place-items:center;margin-top:1px}
+  .step-item span{font-size:13px}
+
+  .benefits{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:38px}
+  @media(max-width:900px){ .benefits{grid-template-columns:1fr 1fr} }
+  @media(max-width:520px){ .benefits{grid-template-columns:1fr} }
+  .benefit{padding:22px}
+  .benefit .bi{width:44px;height:44px;border-radius:11px;background:linear-gradient(135deg, hsl(var(--primary)/.18), hsl(var(--primary)/.04));color:hsl(var(--primary));display:grid;place-items:center;margin-bottom:14px}
+  .benefit h4{font-size:15px;margin-bottom:6px}
+  .benefit p{font-size:13px;color:hsl(var(--muted-foreground))}
+
+  .ledgerrole{padding:30px;margin-top:30px}
+  .ledgerrole .lr-head{display:flex;gap:18px;align-items:flex-start;margin-bottom:22px}
+  .ledgerrole .lricon{width:58px;height:58px;border-radius:16px;background:linear-gradient(135deg, hsl(var(--primary)/.18), hsl(var(--primary)/.04));color:hsl(var(--primary));display:grid;place-items:center;flex:0 0 auto}
+  .lrgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:760px){ .lrgrid{grid-template-columns:1fr} }
+  .lrgrid .lritem{padding:16px;border-radius:8px;background:hsl(var(--muted)/.5);border:1px solid hsl(var(--border))}
+  .lrgrid h4{font-size:14px;margin-bottom:6px}
+  .lrgrid p{font-size:12.5px;color:hsl(var(--muted-foreground))}
+
+  /* ---------- api showcase ---------- */
+  .apicard{padding:34px}
+  pre.codeblk{background:hsl(var(--muted)/.6);border:1px solid hsl(var(--border));border-radius:10px;padding:22px;overflow-x:auto;font-family:ui-monospace,"SF Mono",Consolas,monospace;font-size:13px;line-height:1.65;margin:0}
+  .apifeatures{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:26px;padding-top:26px;border-top:1px solid hsl(var(--border))}
+  @media(max-width:760px){ .apifeatures{grid-template-columns:1fr} }
+  .apifeatures .fi{display:flex;gap:10px}
+  .apifeatures .fi svg{color:hsl(var(--primary));flex:0 0 auto;margin-top:2px}
+  .apifeatures h4{font-size:14px;margin-bottom:3px}
+  .apifeatures p{font-size:12.5px;color:hsl(var(--muted-foreground))}
+
+  /* ---------- trust ---------- */
+  .trustgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  @media(max-width:900px){ .trustgrid{grid-template-columns:1fr 1fr} }
+  @media(max-width:600px){ .trustgrid{grid-template-columns:1fr} }
+  .tcard{padding:24px}
+  .tcard .ti{width:46px;height:46px;border-radius:10px;background:hsl(var(--primary)/.1);color:hsl(var(--primary));display:grid;place-items:center;margin-bottom:16px}
+  .tcard h3{font-size:17px;margin-bottom:8px}
+  .tcard p{font-size:13.5px;color:hsl(var(--muted-foreground))}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;margin-top:56px;text-align:center}
+  @media(max-width:700px){ .stats{grid-template-columns:1fr 1fr} }
+  .stats .num{font-size:36px;font-weight:800}
+  .stats .lbl{color:hsl(var(--muted-foreground));font-size:13.5px;margin-top:4px}
+
+  footer{padding:40px 0;border-top:1px solid hsl(var(--border));text-align:center}
+  footer p{font-size:12.5px;color:hsl(var(--muted-foreground));max-width:640px;margin:0 auto}
+  footer .fb{font-weight:700;color:hsl(var(--foreground))}
+
+  @media(prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important;scroll-behavior:auto!important} }
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <div class="container row">
+    <div class="brand"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M9 15l6-6"/><path d="M8 13l-2 2a3.5 3.5 0 005 5l3-3"/><path d="M16 11l2-2a3.5 3.5 0 00-5-5l-3 3"/></svg></span> KaaS Architecture</div>
+    <div class="navlinks">
+      <a href="#architecture">Architecture</a>
+      <a href="#demo">Live Demo</a>
+      <a href="#federated">Federated Learning</a>
+      <a href="#api">API</a>
+      <a href="#trust">Trust</a>
+    </div>
+    <button class="themetoggle" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">◐</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="container inner">
+    <span class="badge glass" style="border:1px solid hsl(var(--border));color:hsl(var(--primary))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"/></svg> Enterprise-Grade KYC Solution</span>
+    <h1><span class="gradient-text">AI-Powered</span> KYC<br>on Blockchain</h1>
+    <p class="lead">Verifiable credit risk scoring delivered through a hybrid three-layer architecture combining blockchain immutability with advanced AI computation.</p>
+    <div class="ctas">
+      <a href="#demo" class="btn primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="17" height="17"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg> Try the Live Demo</a>
+      <a href="#api" class="btn outline">View API Docs</a>
+    </div>
+    <div class="trustrow">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" style="color:hsl(var(--primary))"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg> Bank-Grade Security</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" style="color:hsl(var(--primary))"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"/></svg> Regulatory Compliant</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" style="color:hsl(var(--primary))"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg> Real-Time Scoring</span>
+    </div>
+  </div>
+</header>
+
+<!-- THREE LAYER ARCHITECTURE -->
+<section id="architecture">
+  <div class="container">
+    <div class="shead">
+      <h2>Three-Layer <span class="gradient-text">Architecture</span></h2>
+      <p>A sophisticated hybrid model combining blockchain immutability with AI intelligence</p>
+    </div>
+    <div class="layers">
+      <div class="card layercard p1">
+        <div class="lic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></div>
+        <h3>Layer 1</h3>
+        <div class="sub">Data Layer</div>
+        <p class="desc">Blockchain-based source of truth ensuring data immutability and integrity for regulatory compliance and auditability.</p>
+        <ul>
+          <li>Permissioned blockchain ledger (Hyperledger Fabric, Corda)</li>
+          <li>Cryptographic hashes of KYC documents and attestations</li>
+          <li>Smart contracts for data access policies</li>
+          <li>Transaction summaries and verification timestamps</li>
+        </ul>
+      </div>
+      <div class="card layercard p2">
+        <div class="lic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></svg></div>
+        <h3>Layer 2</h3>
+        <div class="sub">Computation Layer</div>
+        <p class="desc">Off-chain AI processing with gradient boosting models for high-speed, complex risk scoring and analytics.</p>
+        <ul>
+          <li>XGBoost / LightGBM models for credit risk assessment</li>
+          <li>Federated learning for privacy-preserving collaboration</li>
+          <li>Oracle bridge for secure data retrieval</li>
+          <li>Real-time feature calculation and model execution</li>
+        </ul>
+      </div>
+      <div class="card layercard p3">
+        <div class="lic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="24" height="24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 5.7 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.7-4-9s1.5-6.5 4-9z"/></svg></div>
+        <h3>Layer 3</h3>
+        <div class="sub">Consumption Layer</div>
+        <p class="desc">API-first microservice architecture delivering low-latency, verifiable risk scores to banking partners.</p>
+        <ul>
+          <li>Secure RESTful API with OAuth 2.0 authentication</li>
+          <li>JSON response with risk scores and audit hashes</li>
+          <li>Rate limiting and request routing</li>
+          <li>Cryptographic verification of model provenance</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card flowbar">
+      <div class="step"><div class="n">1</div><p>Request</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">2</div><p>AI Scoring</p></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="n">3</div><p>Verified Response</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE DEMO -->
+<section id="demo" class="demo">
+  <div class="container">
+    <div class="shead">
+      <span class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg> Interactive walkthrough</span>
+      <h2>See the Pipeline <span class="gradient-text">Run</span></h2>
+      <p>Submit a mock customer ID and watch the request move through all three layers — ledger lookup, AI scoring, and the signed API response.</p>
+    </div>
+
+    <div class="card demowrap">
+      <div class="demo-left">
+        <label for="custId">Customer ID</label>
+        <input id="custId" type="text" value="hash_abc123" />
+        <label>Data points requested</label>
+        <div class="points">
+          <span class="chip">transaction_history</span>
+          <span class="chip">kyc_profile</span>
+        </div>
+        <button class="btn primary runbtn" id="runBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg> <span id="runBtnLabel">Run KYC Risk Check</span></button>
+        <p class="muted" style="font-size:12px;margin-top:14px">This is a client-side simulation for illustration — no real blockchain, model, or customer data is involved.</p>
+      </div>
+      <div style="padding-left:34px">
+        <div class="tracelog card" id="traceLog" style="border:none;box-shadow:none;padding:18px">
+          <p class="placeholder" id="tracePlaceholder">Pipeline trace will appear here once you run a check…</p>
+        </div>
+        <div class="resultcard" id="resultCard">
+          <div class="rt">✓ Signed response received</div>
+          <div class="resultgrid" id="resultGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEDERATED LEARNING -->
+<section id="federated">
+  <div class="container">
+    <div class="shead">
+      <span class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M8 4a3 3 0 00-3 3 3 3 0 00-1 5.8A3 3 0 006 18h1a2 2 0 002-2V6a2 2 0 00-1-2z"/><path d="M16 4a3 3 0 013 3 3 3 0 011 5.8A3 3 0 0118 18h-1a2 2 0 01-2-2V6a2 2 0 011-2z"/><path d="M11 6v12M13 6v12"/></svg> Advanced AI Training</span>
+      <h2>Federated Learning Architecture</h2>
+      <p>Collaborative model training that preserves privacy while solving the cold-start problem through secure, decentralized gradient boosting.</p>
+    </div>
+
+    <div class="card phase ph0">
+      <div style="flex:0 0 auto;text-align:center">
+        <div class="picon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><circle cx="6" cy="6" r="2.3"/><circle cx="6" cy="18" r="2.3"/><circle cx="18" cy="9" r="2.3"/><path d="M6 8.3V15.7"/><path d="M6 8.3C6 12 10 12.5 15.7 9.9"/></svg></div>
+        <div class="pnum">01</div>
+      </div>
+      <div class="content">
+        <div class="eyebrow-sm">The Dispatch</div>
+        <h3>Global Model Distribution</h3>
+        <p class="desc">Global GBM initialized and cryptographically hashed on blockchain for transparency.</p>
+        <div class="steps">
+          <div class="step-item"><div class="sn">1</div><span>Initialize Global Gradient Boosting Model</span></div>
+          <div class="step-item"><div class="sn">2</div><span>Generate cryptographic hash of model parameters</span></div>
+          <div class="step-item"><div class="sn">3</div><span>Record hash on Verifiable Ledger</span></div>
+          <div class="step-item"><div class="sn">4</div><span>Securely dispatch to all participating institutions</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card phase ph1">
+      <div style="flex:0 0 auto;text-align:center">
+        <div class="picon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div>
+        <div class="pnum">02</div>
+      </div>
+      <div class="content">
+        <div class="eyebrow-sm">Privacy-Preserving Step</div>
+        <h3>Local Model Training</h3>
+        <p class="desc">Each institution trains locally on private data without exposing raw customer information.</p>
+        <div class="steps">
+          <div class="step-item"><div class="sn">1</div><span>Retrieve local proprietary customer data</span></div>
+          <div class="step-item"><div class="sn">2</div><span>Train GBM copy with historical outcomes</span></div>
+          <div class="step-item"><div class="sn">3</div><span>Generate model updates (gradients/deltas)</span></div>
+          <div class="step-item"><div class="sn">4</div><span>Encrypt and prepare for secure transmission</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card phase ph2">
+      <div style="flex:0 0 auto;text-align:center">
+        <div class="picon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="30" height="30"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <div class="pnum">03</div>
+      </div>
+      <div class="content">
+        <div class="eyebrow-sm">The Consensus</div>
+        <h3>Global Aggregation</h3>
+        <p class="desc">Model updates aggregated and new global model recorded on blockchain.</p>
+        <div class="steps">
+          <div class="step-item"><div class="sn">1</div><span>Receive encrypted model updates from clients</span></div>
+          <div class="step-item"><div class="sn">2</div><span>Weighted aggregation of all updates</span></div>
+          <div class="step-item"><div class="sn">3</div><span>Apply updates to create improved Global GBM</span></div>
+          <div class="step-item"><div class="sn">4</div><span>Hash and record new model on Verifiable Ledger</span></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="text-align:center;font-size:26px;margin:56px 0 26px">Federated Learning Benefits</h3>
+    <div class="benefits">
+      <div class="card benefit"><div class="bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"/></svg></div><h4>Privacy-First</h4><p>Raw customer data never leaves institutional boundaries.</p></div>
+      <div class="card benefit"><div class="bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><circle cx="9" cy="8" r="3.2"/><path d="M3 19a6 6 0 0112 0"/><circle cx="17" cy="9.5" r="2.6"/><path d="M14.5 19a5 5 0 019 0"/></svg></div><h4>Collaborative Intelligence</h4><p>Multiple institutions improve the model without data sharing.</p></div>
+      <div class="card benefit"><div class="bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></div><h4>Cold Start Solution</h4><p>Overcome limited siloed data challenges through federation.</p></div>
+      <div class="card benefit"><div class="bi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M8 4a3 3 0 00-3 3 3 3 0 00-1 5.8A3 3 0 006 18h1a2 2 0 002-2V6a2 2 0 00-1-2z"/><path d="M16 4a3 3 0 013 3 3 3 0 011 5.8A3 3 0 0118 18h-1a2 2 0 01-2-2V6a2 2 0 011-2z"/><path d="M11 6v12M13 6v12"/></svg></div><h4>Continuous Learning</h4><p>Model improves iteratively with each training round.</p></div>
+    </div>
+
+    <div class="card ledgerrole">
+      <div class="lr-head">
+        <div class="lricon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="26" height="26"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"/></svg></div>
+        <div>
+          <h3 style="font-size:22px;margin-bottom:8px">Role of the Verifiable Ledger</h3>
+          <p class="muted" style="font-size:14px">The blockchain maintains trust among competing institutions by providing tamper-proof model provenance and shared governance.</p>
+        </div>
+      </div>
+      <div class="lrgrid">
+        <div class="lritem"><h4>Model Provenance</h4><p>Proves which GBM version was used and when it was trained.</p></div>
+        <div class="lritem"><h4>Tamper-Proof Audit</h4><p>Immutable ledger prevents model swapping or result tampering.</p></div>
+        <div class="lritem"><h4>Shared Governance</h4><p>All participants audit the model without sharing raw data.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- API SHOWCASE -->
+<section id="api" style="background:hsl(var(--muted)/.4)">
+  <div class="container">
+    <div class="shead">
+      <span class="eyebrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M8 6L2 12l6 6M16 6l6 6-6 6"/></svg> Developer-First API</span>
+      <h2><span class="gradient-text">Simple</span> Integration</h2>
+      <p>RESTful API with comprehensive documentation and SDKs for major languages.</p>
+    </div>
+    <div class="card apicard">
+      <pre class="codeblk">POST /v1/kyc/risk-score
+{
+  "customer_id": "hash_abc123",
+  "data_points": ["transaction_history", "kyc_profile"]
+}
+
+// Response
+{
+  "risk_score": 785,
+  "eligibility": "High",
+  "top_driver": "Transaction Consistency",
+  "audit_hash": "0x4b7f9c2a...",
+  "model_version": "v2.3.1",
+  "timestamp": "2025-10-04T12:34:56Z"
+}</pre>
+      <div class="apifeatures">
+        <div class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg><div><h4>OAuth 2.0 Security</h4><p>Enterprise-grade authentication</p></div></div>
+        <div class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg><div><h4>Real-Time Response</h4><p>Sub-second latency guaranteed</p></div></div>
+        <div class="fi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg><div><h4>Verifiable Results</h4><p>Blockchain-backed attestations</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section id="trust">
+  <div class="container">
+    <div class="shead">
+      <h2>Built for <span class="gradient-text">Trust &amp; Scale</span></h2>
+      <p>Enterprise-grade infrastructure trusted by leading financial institutions.</p>
+    </div>
+    <div class="trustgrid">
+      <div class="card tcard"><div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"/></svg></div><h3>Regulatory Compliant</h3><p>Full GDPR compliance with right-to-erasure support through hybrid architecture.</p></div>
+      <div class="card tcard"><div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div><h3>Bank-Grade Security</h3><p>Multi-layer encryption and permissioned blockchain access control.</p></div>
+      <div class="card tcard"><div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/></svg></div><h3>High Performance</h3><p>Sub-second scoring with 99.99% uptime SLA guarantee.</p></div>
+      <div class="card tcard"><div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></div><h3>Audit Trail</h3><p>Immutable records of every score generation for complete transparency.</p></div>
+      <div class="card tcard"><div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><circle cx="12" cy="8" r="5.5"/><path d="M8.5 13L7 21l5-2.5L17 21l-1.5-8"/></svg></div><h3>Proven Accuracy</h3><p>AI models trained on millions of transactions with continuous learning.</p></div>
+      <div class="card tcard"><div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01"/></svg></div><h3>Scalable Infrastructure</h3><p>Microservice architecture designed for enterprise-scale operations.</p></div>
+    </div>
+    <div class="stats">
+      <div><div class="num gradient-text">99.99%</div><div class="lbl">Uptime SLA</div></div>
+      <div><div class="num gradient-text">&lt;500ms</div><div class="lbl">Avg Response Time</div></div>
+      <div><div class="num gradient-text">10M+</div><div class="lbl">Scores Generated</div></div>
+      <div><div class="num gradient-text">100%</div><div class="lbl">Audit Traceability</div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p><span class="fb">Conceptual mockup.</span> This page recreates the architecture and copy from the <code>kyc-as-a-service</code> repository as a static, dependency-free showcase. The live demo above is a client-side simulation — no blockchain, ML model, or real customer data is involved.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const themeBtn = document.getElementById('themeBtn');
+  themeBtn.addEventListener('click', function(){
+    const root = document.documentElement;
+    const current = root.getAttribute('data-theme');
+    if(current === 'dark'){ root.setAttribute('data-theme','light'); }
+    else if(current === 'light'){ root.removeAttribute('data-theme'); }
+    else { root.setAttribute('data-theme','dark'); }
+  });
+
+  const runBtn = document.getElementById('runBtn');
+  const traceLog = document.getElementById('traceLog');
+  const tracePlaceholder = document.getElementById('tracePlaceholder');
+  const resultCard = document.getElementById('resultCard');
+  const resultGrid = document.getElementById('resultGrid');
+  const custIdInput = document.getElementById('custId');
+
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+
+  function logEntry(tag, tagClass, text){
+    if(tracePlaceholder) tracePlaceholder.style.display = 'none';
+    const row = document.createElement('div');
+    row.className = 'entry';
+    row.innerHTML = `<span class="tag ${tagClass}">${tag}</span><span class="txt">${text}</span>`;
+    traceLog.appendChild(row);
+    traceLog.scrollTop = traceLog.scrollHeight;
+  }
+
+  function randHex(len){
+    let s = '';
+    const chars = 'abcdef0123456789';
+    for(let i=0;i<len;i++) s += chars[Math.floor(Math.random()*chars.length)];
+    return s;
+  }
+
+  const runBtnLabel = document.getElementById('runBtnLabel');
+
+  async function runDemo(){
+    runBtn.disabled = true;
+    runBtnLabel.textContent = 'Running…';
+    traceLog.innerHTML = '';
+    resultCard.classList.remove('show');
+    const custId = custIdInput.value.trim() || 'hash_abc123';
+
+    logEntry('L1','l1', `Oracle Bridge → reading verified attestation hash for <b>${custId}</b> from ledger`);
+    await wait(550);
+    const docHash = '0x' + randHex(16) + '…';
+    logEntry('L1','l1', `Ledger read confirmed · document hash <code>${docHash}</code>`);
+    await wait(500);
+
+    logEntry('L2','l2', 'Feature Service → computing transaction volatility, consistency, and behavioral patterns');
+    await wait(600);
+    logEntry('L2','l2', 'AI Scoring Engine → running Gradient Boosting model (XGBoost) inference');
+    await wait(700);
+    logEntry('L2','l2', 'Federated model in use: <code>v2.3.1</code> (last aggregated across participating institutions)');
+    await wait(500);
+
+    logEntry('L3','l3', 'Attestation → signing result and recording audit hash on the Verifiable Ledger');
+    await wait(600);
+
+    const score = Math.floor(650 + Math.random()*250);
+    const eligibility = score >= 750 ? 'High' : score >= 650 ? 'Medium' : 'Low';
+    const drivers = ['Transaction Consistency','Payment History Stability','Account Tenure','Behavioral Pattern Match'];
+    const driver = drivers[Math.floor(Math.random()*drivers.length)];
+    const auditHash = '0x' + randHex(12) + '...';
+    const ts = new Date().toISOString().replace(/\.\d+Z$/, 'Z');
+
+    logEntry('L3','l3', `✓ Signed response ready · risk_score <b>${score}</b>`);
+
+    resultGrid.innerHTML = `
+      <span class="k">customer_id</span><span class="v">${custId}</span>
+      <span class="k">risk_score</span><span class="v">${score}</span>
+      <span class="k">eligibility</span><span class="v"><span class="elig ${eligibility==='High'?'high':'medium'}">${eligibility}</span></span>
+      <span class="k">top_driver</span><span class="v">${driver}</span>
+      <span class="k">audit_hash</span><span class="v">${auditHash}</span>
+      <span class="k">model_version</span><span class="v">v2.3.1</span>
+      <span class="k">timestamp</span><span class="v">${ts}</span>
+    `;
+    resultCard.classList.add('show');
+
+    runBtn.disabled = false;
+    runBtnLabel.textContent = 'Run KYC Risk Check';
+  }
+
+  runBtn.addEventListener('click', runDemo);
+})();
+</script>
+</body>
+</html>
