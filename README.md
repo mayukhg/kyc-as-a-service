@@ -1,296 +1,118 @@
-# Hybrid AI-on-Blockchain KYC Solution
+# Verifiable KYC — Hybrid AI-on-Ledger Portfolio Demo
 
-## Overview
+## Intent
 
-This is a sophisticated **KYC as a Service (KaaS)** platform that delivers verifiable credit risk scoring through a hybrid architecture combining blockchain immutability with AI-powered intelligence. The solution enables banks and lending institutions to access real-time, auditable risk assessments backed by cryptographic verification.
+This repo is a **product-manager portfolio demo**, not a production banking platform.
 
-> ⚡ **New here? Skip the setup.** Open **[`demo/architecture-mock.html`](demo/architecture-mock.html)** straight in your browser — no install, no build step — and click **"Run KYC Risk Check"** to watch a live-simulated request move through all three layers (ledger lookup → AI scoring → signed API response) end to end. It's the fastest way to see what this architecture actually does before you touch `npm install`. See [Interactive Demo](#-interactive-demo) below for details.
+**Target concept:**
 
-## What This Solution Does
+> A hybrid AI-on-blockchain KYC platform — verifiable credit risk scoring with blockchain-attested audit trails and privacy-preserving federated learning.
 
-The platform provides:
+**What this app is for**
 
-- **Verifiable Credit Risk Scoring**: AI-generated risk scores with blockchain-backed attestations
-- **Real-Time KYC Assessment**: Sub-second API responses for customer verification and creditworthiness
-- **Regulatory Compliance**: Immutable audit trails meeting financial regulatory requirements
-- **Privacy-Preserving Analytics**: Federated learning capabilities for multi-institutional collaboration
-- **Cryptographic Verification**: Every score includes blockchain hash for provenance verification
+- Show how a PM would turn that concept into **shippable surfaces** (case study, analyst console, API playground, federated rounds, audit).
+- Make every major claim in the concept **demoable and inspectable** in one `npm run dev` session.
+- Stay **honest** about fidelity: local permissioned ledger + synthetic data + demo FL — not Fabric/mainnet or bank-grade crypto.
 
-## Solution Architecture
+**What it currently does**
 
-The platform implements a **Three-Layer Hybrid Architecture** designed for enterprise-grade performance, security, and verifiability:
+- Runs a full-stack app (React + Express + SQLite) with ~50 synthetic customers.
+- Scores risk with a **trained gradient-boosted model** (synthetic labels), returns drivers + `model_version` / `model_hash`.
+- Executes a **hybrid path**: ledger lookup → off-chain GBM → ledger commit → API/console.
+- Stores **append-only ledger attestations** and supports `verify` of an `audit_hash`.
+- Lets an **analyst** approve / reject / manual-review with reasons in an audit trail.
+- Runs **federated learning rounds** across three institutional partitions (FedAvg; raw rows stay local; new model hash sealed on ledger).
 
-### Layer 1: Data Layer (Blockchain - Source of Truth)
+## How far it matches the concept
 
-**Purpose**: Guarantee immutability and integrity of customer data for regulatory compliance and auditability.
+Roughly **~70–80% as a demoable concept**; still **~20–30% short** of a literal production “AI-on-blockchain” platform.
 
-**Technology**: Permissioned blockchain (Hyperledger Fabric, Corda, or private Ethereum network)
+| Claim | Match | What you have |
+|--------|--------|----------------|
+| **Hybrid** | Strong | Live path: ledger lookup → off-chain GBM → ledger commit + API |
+| **AI** | Good (demo-grade) | Trained gradient-boosted stumps on synthetic labels, versioned `model_hash` — not production XGBoost/LightGBM, but real model inference |
+| **On-blockchain** | Partial / honest | Local **append-only permissioned ledger** with verify — not Fabric/Corda/public L1 |
+| **KYC platform** | Partial | Score + decide + audit + KYC status fields — not full IDV (docs/OCR/liveness) |
+| **Verifiable credit risk scoring** | Strong | Score + drivers + `model_version` / `model_hash` + replayable API |
+| **Blockchain-attested audit trails** | Strong (sim) | Attestations committed as blocks; `GET /api/ledger/verify/:hash` |
+| **Privacy-preserving federated learning** | Strong (sim) | 3 bank partitions, local updates, FedAvg, new model hash on ledger; raw rows stay local |
 
-**Data Stored**:
-- Cryptographic hashes of KYC documents and attestations
-- Verification timestamps and status records
-- Smart contracts for data access policies
-- Transaction summaries and audit trails
+**Fair one-liner for interviews:**
 
-**Why Permissioned**: Ensures data confidentiality while allowing authorized financial institutions to verify integrity.
+> Local permissioned ledger + synthetic data + demo FL — not a production chain or bank-grade FL crypto.
 
-### Layer 2: Computation Layer (Off-Chain AI - Intelligence Engine)
+**Not fair to imply:** mainnet/Hyperledger ops, real customer PII, or production secure aggregation.
 
-**Purpose**: Execute high-speed, complex risk scoring using advanced machine learning models.
+**Still scoped out:** public L1 / Fabric ops, production OAuth, OCR/liveness, cryptographic secure aggregation.
 
-**Technology**: Gradient Boosting Models (XGBoost/LightGBM)
-
-**Components**:
-- **Oracle Bridge**: Secure data retrieval from blockchain and off-chain storage
-- **AI Scoring Engine**: Real-time credit risk assessment
-- **Feature Service**: Transaction analysis and behavioral pattern recognition
-- **Federated Learning**: Privacy-preserving collaborative model training
-
-**Data Flow**: 
-1. Oracle retrieves verified data from blockchain and secure off-chain database
-2. Feature service calculates risk indicators (volatility, consistency, patterns)
-3. AI model executes scoring based on comprehensive feature set
-4. Results are cryptographically signed and attested
-
-**Federated Learning Integration**: The platform implements a privacy-preserving collaborative training workflow that allows multiple institutions to improve the GBM model without sharing raw customer data:
-
-**Phase 1 - Global Model Distribution**:
-- Initialize Global Gradient Boosting Model (GBM)
-- Generate cryptographic hash of model parameters
-- Record hash on blockchain for transparency
-- Securely dispatch model to all participating institutions
-
-**Phase 2 - Local Model Training** (Privacy-Preserving):
-- Each institution trains locally on proprietary customer data
-- Historical credit outcomes (Default/Repay labels) used for training
-- Model updates (gradients/deltas) generated without exposing raw data
-- Encrypted updates prepared for secure transmission
-
-**Phase 3 - Global Aggregation** (The Consensus):
-- Receive encrypted model updates from all clients
-- Weighted aggregation based on data volume/quality
-- Apply updates to create improved Global GBM
-- Hash and record new model version on blockchain
-
-**Benefits**:
-- **Privacy-First**: Raw customer data never leaves institutional boundaries
-- **Collaborative Intelligence**: Multiple institutions improve the model collectively
-- **Cold Start Solution**: Overcomes limited siloed data challenges
-- **Continuous Learning**: Model improves iteratively with each training round
-
-### Federated Learning & Blockchain Role
-
-**Model Provenance**: The blockchain proves which version of the Global GBM was used and when it was trained, creating an immutable audit trail.
-
-**Tamper-Proof Audit**: Ensures the KaaS provider cannot swap out a malicious model or tamper with training results, as every new model's fingerprint is locked on the ledger.
-
-**Shared Governance**: Provides a mechanism for all participants to agree on and audit the core predictive logic without requiring them to share their most valuable asset: raw customer data.
-
-### Layer 3: Consumption Layer (API Service - Delivery Interface)
-
-**Purpose**: Provide secure, low-latency access to risk scores via RESTful API.
-
-**Technology**: API Gateway with OAuth 2.0 authentication
-
-**Response Structure**:
-```json
-{
-  "risk_score": 785,
-  "eligibility": "High",
-  "top_driver": "Transaction Consistency",
-  "audit_hash": "0x4b7f9c2a...",
-  "model_version": "v2.3.1",
-  "timestamp": "2025-10-04T12:34:56Z"
-}
-```
-
-**Security Features**:
-- OAuth 2.0 enterprise authentication
-- Rate limiting and request routing
-- Cryptographic verification of model provenance
-- Real-time audit trail generation
-
-## 🚀 Interactive Demo
-
-Reading about a three-layer architecture is one thing — watching a request move through it is another. **[`demo/architecture-mock.html`](demo/architecture-mock.html)** is a single, dependency-free HTML file that recreates this app's full design system and walks through every section above, plus one thing the main app doesn't have yet: a **live pipeline simulation**.
-
-**Try it now:**
+## Quick start
 
 ```bash
-# No build, no install — just open it
-open demo/architecture-mock.html          # macOS
-# or: xdg-open demo/architecture-mock.html # Linux
-# or: start demo/architecture-mock.html    # Windows
-```
-
-Once it's open, scroll to **"See the Pipeline Run"**, enter a customer ID (or keep the default `hash_abc123`), and hit **Run KYC Risk Check**. You'll see, step by step:
-
-1. **Layer 1 (Data)** — the Oracle Bridge reading the customer's attestation hash off the ledger
-2. **Layer 2 (Computation)** — the Feature Service computing risk indicators and the GBM model scoring the request
-3. **Layer 3 (Consumption)** — a signed, audit-hashed JSON response rendered live, in the same shape as the [API example](#layer-3-consumption-layer-api-service---delivery-interface) above
-
-It's the quickest way to sanity-check the end-to-end flow — or to demo the concept to someone — before spinning up the full React app.
-
-## Tech Stack
-
-### Frontend
-
-- **React 18.3.1** - Modern UI library with hooks
-- **TypeScript** - Type-safe development
-- **Vite** - Lightning-fast build tool and dev server
-- **Tailwind CSS** - Utility-first styling with custom design system
-- **shadcn-ui** - High-quality, accessible component library
-- **Lucide React** - Beautiful icon system
-
-### Design System
-
-- **Custom HSL Color Palette** - Semantic tokens for consistent theming
-- **Glassmorphism Effects** - Premium visual design
-- **Responsive Grid System** - Mobile-first architecture
-- **Animation System** - Smooth transitions and interactions
-
-### Key Libraries
-
-- **React Router DOM** - Client-side routing
-- **Tailwind Merge** - Utility class optimization
-- **Class Variance Authority** - Component variant management
-
-## Getting Started
-
-> Want to see it running in 10 seconds instead of setting up the dev environment? Jump to the [Interactive Demo](#-interactive-demo) first.
-
-### Prerequisites
-
-- Node.js 18+ and npm (or bun)
-- Git for version control
-
-### Installation
-
-```bash
-# Clone the repository
-git clone <YOUR_GIT_URL>
-
-# Navigate to project directory
-cd <YOUR_PROJECT_NAME>
-
-# Install dependencies
 npm install
-
-# Start development server
 npm run dev
 ```
 
-The application will be available at `http://localhost:5173`
+| Service | URL |
+|---------|-----|
+| App | http://localhost:8080 |
+| API | http://localhost:3001 |
 
-### Building for Production
+Surfaces: **case study**, **Analyst Console**, **API Playground**, **Federated Learning**, **Audit**.
+
+## Demo artifacts (no install)
+
+| Artifact | Path | How to open |
+|----------|------|-------------|
+| Self-contained interactive mock | [`demo/architecture-working-mock.html`](demo/architecture-working-mock.html) | Open in browser |
+| In-depth slide deck + screenshots | [`demo/slides/index.html`](demo/slides/index.html) | Open in browser (←/→ keys) |
+| E2E workflow video | [`demo/video/e2e-workflow.mp4`](demo/video/e2e-workflow.mp4) | Play in any video player |
+| Re-capture screens/video | `node demo/capture-demo.mjs` | App must be running on :8080 |
 
 ```bash
-# Create optimized production build
-npm run build
-
-# Preview production build locally
-npm run preview
+# optional local static server for demo/
+python3 -m http.server 8090 --directory demo
+# then http://127.0.0.1:8090/slides/index.html
+#      http://127.0.0.1:8090/architecture-working-mock.html
 ```
 
-## Project Structure
+## Implementation phases (A–D)
 
-```
-.
-├── demo/
-│   └── architecture-mock.html   # zero-install interactive demo (see above)
-└── src/
-    ├── components/          # React components
-    │   ├── Hero.tsx        # Landing page hero section
-    │   ├── ThreeLayerArchitecture.tsx  # Architecture visualization
-    │   ├── FederatedLearning.tsx       # Federated learning workflow
-    │   ├── LayerCard.tsx   # Individual layer cards
-    │   ├── APIShowcase.tsx # API documentation display
-    │   ├── TrustSection.tsx # Trust and security features
-    │   └── ui/             # shadcn-ui component library
-    ├── pages/              # Page components
-    │   └── Index.tsx       # Home page
-    ├── assets/             # Static assets
-    ├── lib/                # Utility functions
-    ├── hooks/              # Custom React hooks
-    ├── index.css           # Global styles and design tokens
-    └── main.tsx            # Application entry point
-```
+| Phase | Capability |
+|-------|------------|
+| **A** | Append-only local ledger, `GET /api/ledger/verify/:hash`, score commits blocks |
+| **B** | Gradient-boosted stumps trained on synthetic labels (`server/ml/`), versioned `model_hash` |
+| **C** | Hybrid L1 ledger lookup → L2 GBM → L3 ledger commit in `POST /api/v1/kyc/risk-score` |
+| **D** | `/federated` UI + FedAvg across 3 banks; new model hash sealed on ledger |
 
-## Deployment
+## App routes
 
-### Lovable Platform (Recommended)
+| Route | Purpose |
+|-------|---------|
+| `/` | PM case study + live metrics |
+| `/console` | Analyst review queue |
+| `/console/customers/:id` | Drivers, ledger verify, decisions |
+| `/playground` | Live risk-score API + pipeline |
+| `/federated` | Run FL rounds |
+| `/audit` | Attestations + decisions |
 
-Simply click the **Publish** button in the Lovable editor to deploy instantly.
+## 5-minute interviewer script
 
-### Custom Domain
+1. `/` — metrics + tradeoffs  
+2. Playground — `hash_abc123` — show L1→L2→L3 + ledger height  
+3. Open customer → role **Analyst** → submit decision  
+4. Federated → **Run FL round** → model version bump  
+5. Audit → attestation + decision  
 
-Navigate to **Project > Settings > Domains** in Lovable to connect your custom domain.
+Curated IDs: `hash_abc123`, `hash_omar77`, `hash_priya09`.
 
-## Key Features
+## Key APIs
 
-✅ **Verifiable AI Outputs** - Every score backed by blockchain attestation  
-✅ **Sub-Second Response Times** - Optimized for high-throughput financial operations  
-✅ **Privacy-First Design** - Off-chain storage for sensitive PII with GDPR compliance  
-✅ **Federated Learning** - Collaborative model training without sharing raw data  
-✅ **Regulatory Ready** - Immutable audit trails for compliance requirements  
-✅ **Enterprise Security** - OAuth 2.0, rate limiting, and cryptographic verification  
-✅ **Beautiful UI** - Premium design with glassmorphism and smooth animations
+- `POST /api/v1/kyc/risk-score` — hybrid score + ledger commit  
+- `GET /api/ledger` / `GET /api/ledger/verify/:auditHash`  
+- `GET /api/model`  
+- `POST /api/fl/rounds`  
+- `POST /api/demo/reset`  
 
-## Architecture Benefits
+## Stack
 
-| Benefit | Implementation |
-|---------|---------------|
-| **Trust** | Blockchain immutability ensures data integrity |
-| **Performance** | Off-chain AI enables millisecond scoring |
-| **Scalability** | Microservice architecture scales horizontally |
-| **Privacy** | Raw data stays off-chain, only hashes on ledger |
-| **Collaboration** | Federated learning allows multi-institutional model improvement |
-| **Verifiability** | Cryptographic proofs for every transaction |
-
-## API Integration Example
-
-```javascript
-POST https://api.kyc-platform.com/v1/kyc/risk-score
-
-Headers:
-  Authorization: Bearer <your_oauth_token>
-  Content-Type: application/json
-
-Body:
-{
-  "customer_id": "hash_abc123",
-  "data_points": ["transaction_history", "kyc_profile"]
-}
-
-Response:
-{
-  "risk_score": 785,
-  "eligibility": "High",
-  "top_driver": "Transaction Consistency",
-  "audit_hash": "0x4b7f9c2a8f1e3d5b...",
-  "model_version": "v2.3.1",
-  "timestamp": "2025-10-04T12:34:56Z"
-}
-```
-
-## Contributing
-
-This is a Lovable-generated project. To make changes:
-
-1. Use the [Lovable Editor](https://lovable.dev/projects/02aa7ea4-4b5a-4b8a-9e23-0cdb167bf3de)
-2. Clone and edit locally, then push changes
-3. Use GitHub Codespaces for cloud development
-
-All changes sync automatically between Lovable and your Git repository.
-
-## License
-
-All rights reserved.
-
-## Support
-
-For questions or issues, please refer to the [Lovable Documentation](https://docs.lovable.dev/).
-
----
-
-**Built with [Lovable](https://lovable.dev)** - The AI-powered web application builder
+React + Vite + Tailwind + TanStack Query · Express + better-sqlite3 + Zod · pure-TS GBM · Playwright capture scripts for decks/video

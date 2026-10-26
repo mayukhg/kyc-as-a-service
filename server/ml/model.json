@@ -1,0 +1,270 @@
+{
+  "version": "gbm-v1.0.3-fl",
+  "trained_at": "2026-10-26T05:46:23.048Z",
+  "n_estimators": 40,
+  "learning_rate": 0.08,
+  "base_score": 716.1257916554915,
+  "trees": [
+    {
+      "feature": 3,
+      "threshold": 0.5,
+      "left": -53.458888888889305,
+      "right": 26.729444444444045
+    },
+    {
+      "feature": 3,
+      "threshold": 0.5,
+      "left": -49.182177777778065,
+      "right": 24.591088888888706
+    },
+    {
+      "feature": 3,
+      "threshold": 1.5,
+      "left": -23.386067555555304,
+      "right": 46.77213511111133
+    },
+    {
+      "feature": 3,
+      "threshold": 0.5,
+      "left": -43.37671815111121,
+      "right": 21.688359075555564
+    },
+    {
+      "feature": 0,
+      "threshold": 48.5,
+      "left": -38.75263698927296,
+      "right": 22.11537922424482
+    },
+    {
+      "feature": 3,
+      "threshold": 1.5,
+      "left": -20.62330058160348,
+      "right": 41.24660116320688
+    },
+    {
+      "feature": 1,
+      "threshold": 35.5,
+      "left": -34.23641947915988,
+      "right": 22.509027171381486
+    },
+    {
+      "feature": 0,
+      "threshold": 62.5,
+      "left": -25.252359916059135,
+      "right": 29.380149517722682
+    },
+    {
+      "feature": 3,
+      "threshold": 0.5,
+      "left": -38.21287846258385,
+      "right": 19.106439231292
+    },
+    {
+      "feature": 3,
+      "threshold": 1.5,
+      "left": -18.206750854293123,
+      "right": 36.413501708586324
+    },
+    {
+      "feature": 1,
+      "threshold": 35.5,
+      "left": -31.48510010729369,
+      "right": 20.700148689325733
+    },
+    {
+      "feature": 0,
+      "threshold": 54.5,
+      "left": -28.740495234352,
+      "right": 22.278135359172353
+    },
+    {
+      "feature": 3,
+      "threshold": 0.5,
+      "left": -33.67209818091721,
+      "right": 16.83604909045858
+    },
+    {
+      "feature": 0,
+      "threshold": 68.5,
+      "left": -18.91305459430895,
+      "right": 29.859865562934676
+    },
+    {
+      "feature": 1,
+      "threshold": 47.5,
+      "left": -21.85193360854997,
+      "right": 25.65226988829768
+    },
+    {
+      "feature": 3,
+      "threshold": 1.5,
+      "left": -16.059127911550654,
+      "right": 32.11825582310126
+    },
+    {
+      "feature": 0,
+      "threshold": 48.5,
+      "left": -29.557453977498607,
+      "right": 16.86786640600706
+    },
+    {
+      "feature": 1,
+      "threshold": 28.5,
+      "left": -33.12233130733685,
+      "right": 15.036147168597191
+    },
+    {
+      "feature": 3,
+      "threshold": 0.5,
+      "left": -29.622323042151233,
+      "right": 14.811161521075638
+    },
+    {
+      "feature": 0,
+      "threshold": 68.5,
+      "left": -16.521111567489044,
+      "right": 26.083474136637644
+    },
+    {
+      "feature": 1,
+      "threshold": 47.5,
+      "left": -19.05036050039996,
+      "right": 22.36346667438269
+    },
+    {
+      "feature": 3,
+      "threshold": 1.5,
+      "left": -14.175317172129589,
+      "right": 28.350634344259422
+    },
+    {
+      "feature": 0,
+      "threshold": 44.5,
+      "left": -29.125933881734753,
+      "right": 13.290474683898411
+    },
+    {
+      "feature": 1,
+      "threshold": 28.5,
+      "left": -28.923481795010105,
+      "right": 13.1300458552469
+    },
+    {
+      "feature": 3,
+      "threshold": 1.5,
+      "left": -13.037360170524428,
+      "right": 26.07472034104884
+    },
+    {
+      "feature": 0,
+      "threshold": 72.5,
+      "left": -13.101427523792898,
+      "right": 25.8137037349977
+    },
+    {
+      "feature": 1,
+      "threshold": 40.5,
+      "left": -19.724809884061372,
+      "right": 16.578521190898126
+    },
+    {
+      "feature": 3,
+      "threshold": 0.5,
+      "left": -24.982740454757046,
+      "right": 12.491370227378487
+    },
+    {
+      "feature": 0,
+      "threshold": 44.5,
+      "left": -25.657830524860724,
+      "right": 11.707942084159678
+    },
+    {
+      "feature": 1,
+      "threshold": 22.5,
+      "left": -30.02936010698902,
+      "right": 9.482955823259713
+    },
+    {
+      "feature": 0,
+      "threshold": 76.5,
+      "left": -10.392583373522767,
+      "right": 25.72064070435555
+    },
+    {
+      "feature": 4,
+      "threshold": 69.5,
+      "left": -15.079339391867071,
+      "right": 17.622842421820568
+    },
+    {
+      "feature": 3,
+      "threshold": 1.5,
+      "left": -11.483455171270904,
+      "right": 22.96691034254192
+    },
+    {
+      "feature": 1,
+      "threshold": 47.5,
+      "left": -14.817908125613025,
+      "right": 17.39493562571958
+    },
+    {
+      "feature": 3,
+      "threshold": 0.5,
+      "left": -21.979474633970778,
+      "right": 10.989737316985403
+    },
+    {
+      "feature": 0,
+      "threshold": 40.5,
+      "left": -25.71950547526204,
+      "right": 9.141270018315945
+    },
+    {
+      "feature": 4,
+      "threshold": 67.5,
+      "left": -14.818872974263835,
+      "right": 15.287189501667134
+    },
+    {
+      "feature": 1,
+      "threshold": 28.5,
+      "left": -22.103633448624027,
+      "right": 10.034121161653188
+    },
+    {
+      "feature": 0,
+      "threshold": 58.5,
+      "left": -14.891486495170733,
+      "right": 14.180829872841452
+    },
+    {
+      "feature": 3,
+      "threshold": 1.5,
+      "left": -10.115151412016552,
+      "right": 20.23030282403289
+    }
+  ],
+  "feature_names": [
+    "txn_consistency",
+    "account_age_months",
+    "delinquency_count",
+    "income_band_num",
+    "kyc_doc_score",
+    "volatility"
+  ],
+  "feature_importance": [
+    0.913,
+    0.0011,
+    0,
+    0.0857,
+    0.0002,
+    0
+  ],
+  "train_rows": 900,
+  "train_rmse": 41.32,
+  "algorithm": "gradient_boosted_stumps",
+  "note": "Federated aggregation (FedAvg on stump parameters) — raw customer rows never left institutions.",
+  "model_hash": "0xefc6259dfc0f8cbac392f677b0dc7a9989a85354"
+}

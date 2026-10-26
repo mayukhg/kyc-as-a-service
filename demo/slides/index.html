@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Verifiable KYC — Product Walkthrough Deck</title>
+  <style>
+    :root {
+      --bg: #000; --fg: #f8fafc; --muted: #94a3b8; --card: #0a0a0a;
+      --border: #27272a; --accent: #60a5fa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--fg);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+    .deck { max-width: 1100px; margin: 0 auto; padding: 24px 20px 80px; }
+    .top {
+      position: sticky; top: 0; z-index: 5; backdrop-filter: blur(10px);
+      background: rgba(0,0,0,.9); border-bottom: 1px solid var(--border);
+      margin: 0 -20px 28px; padding: 12px 20px;
+      display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+    }
+    .top h1 { margin: 0; font-size: 1rem; }
+    .top nav { display: flex; gap: 8px; flex-wrap: wrap; }
+    .top a, .ctrl button {
+      color: var(--fg); text-decoration: none; border: 1px solid var(--border);
+      background: #111; border-radius: 999px; padding: 6px 12px; font-size: .8rem; cursor: pointer;
+    }
+    .slide {
+      display: none; border: 1px solid var(--border); background: var(--card);
+      border-radius: 16px; padding: 28px; min-height: 70vh;
+    }
+    .slide.active { display: block; }
+    .slide h2 { margin: 0 0 8px; font-size: 1.75rem; }
+    .slide .kicker { color: var(--accent); text-transform: uppercase; letter-spacing: .06em; font-size: .75rem; font-weight: 600; }
+    .slide p, .slide li { color: var(--muted); line-height: 1.55; }
+    .slide ul { padding-left: 1.2rem; }
+    .grid { display: grid; gap: 16px; margin-top: 18px; }
+    .grid.two { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 800px) { .grid.two { grid-template-columns: 1fr; } }
+    .shot {
+      width: 100%; border-radius: 12px; border: 1px solid var(--border); display: block; margin-top: 16px;
+    }
+    .pill {
+      display: inline-block; border: 1px solid var(--border); border-radius: 999px;
+      padding: 4px 10px; font-size: .75rem; color: var(--accent); margin: 4px 4px 0 0;
+    }
+    .ctrl { display: flex; gap: 8px; margin-top: 20px; }
+    .meta { font-size: .8rem; color: var(--muted); margin-top: 8px; }
+    code { color: #93c5fd; font-size: .9em; }
+  </style>
+</head>
+<body>
+  <div class="deck">
+    <div class="top">
+      <h1>Verifiable KYC — Walkthrough Deck</h1>
+      <nav>
+        <a href="../video/e2e-workflow.mp4">E2E Video (MP4)</a>
+        <a href="../architecture-working-mock.html">Interactive Mock</a>
+        <a href="../../README.md">README</a>
+      </nav>
+    </div>
+
+    <!-- 0 -->
+    <section class="slide active" data-i="0">
+      <div class="kicker">Slide 1 · Overview</div>
+      <h2>Hybrid AI-on-ledger KYC — portfolio product</h2>
+      <p>A working demo of <strong style="color:#fff">verifiable credit risk scoring</strong> with a local append-only ledger, a trained GBM, dual personas (analyst + engineer), and privacy-preserving federated learning rounds.</p>
+      <div class="grid two">
+        <div>
+          <h3 style="color:#fff;font-size:1rem">What it proves</h3>
+          <ul>
+            <li>End-to-end risk check → ledger commit → human decision → audit</li>
+            <li>AI scoring via gradient-boosted model artifact (synthetic data)</li>
+            <li>FL across 3 institutional partitions without sharing raw rows</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="color:#fff;font-size:1rem">Honest boundaries</h3>
+          <ul>
+            <li>Ledger = local permissioned sim (not public L1 / Fabric ops)</li>
+            <li>Customers & labels are synthetic</li>
+            <li>Demo role switch, not production OAuth</li>
+          </ul>
+        </div>
+      </div>
+      <p class="meta">Run app: <code>npm run dev</code> → http://localhost:8080</p>
+    </section>
+
+    <!-- 1 -->
+    <section class="slide" data-i="1">
+      <div class="kicker">Slide 2 · Case study</div>
+      <h2>Hiring-manager landing</h2>
+      <p>Problem → users → solution → live metrics → explicit PM tradeoffs. CTAs into Console, Playground, and Federated.</p>
+      <img class="shot" src="./screens/01-case-study.png" alt="Case study landing screenshot" />
+    </section>
+
+    <!-- 2 -->
+    <section class="slide" data-i="2">
+      <div class="kicker">Slide 3 · Architecture</div>
+      <h2>Three-layer hybrid path</h2>
+      <ul>
+        <li><strong style="color:#fff">L1 Data</strong> — Oracle looks up prior attestation on the append-only ledger</li>
+        <li><strong style="color:#fff">L2 Computation</strong> — Off-chain GBM inference + feature drivers</li>
+        <li><strong style="color:#fff">L3 Consumption</strong> — Commit new attestation block + return signed JSON API</li>
+      </ul>
+      <span class="pill">POST /api/v1/kyc/risk-score</span>
+      <span class="pill">GET /api/ledger/verify/:hash</span>
+      <span class="pill">model_hash on ledger</span>
+    </section>
+
+    <!-- 3 -->
+    <section class="slide" data-i="3">
+      <div class="kicker">Slide 4 · API Playground</div>
+      <h2>Engineer persona — live risk check</h2>
+      <p>Editable request body, animated pipeline driven by server details, response includes <code>audit_hash</code>, <code>model_hash</code>, and ledger height.</p>
+      <img class="shot" src="./screens/02-playground-idle.png" alt="Playground idle" />
+    </section>
+
+    <!-- 4 -->
+    <section class="slide" data-i="4">
+      <div class="kicker">Slide 5 · Score result</div>
+      <h2>Hybrid response after Run</h2>
+      <img class="shot" src="./screens/03-playground-result.png" alt="Playground result" />
+    </section>
+
+    <!-- 5 -->
+    <section class="slide" data-i="5">
+      <div class="kicker">Slide 6 · Analyst console</div>
+      <h2>Review queue</h2>
+      <p>~50 synthetic customers with scores, eligibility, KYC status, and filters. Top-driver insight for triage.</p>
+      <img class="shot" src="./screens/04-console.png" alt="Console" />
+    </section>
+
+    <!-- 6 -->
+    <section class="slide" data-i="6">
+      <div class="kicker">Slide 7 · Customer detail</div>
+      <h2>Evidence + ledger verify</h2>
+      <p>Drivers, attestation hash, ledger height, and server-side chain verification status before decisioning.</p>
+      <img class="shot" src="./screens/05-customer-detail.png" alt="Customer detail" />
+    </section>
+
+    <!-- 7 -->
+    <section class="slide" data-i="7">
+      <div class="kicker">Slide 8 · Decision</div>
+      <h2>Approve / reject / manual review</h2>
+      <p>Required reason written to the audit trail. Role must be Analyst (Viewer blocked by design).</p>
+      <img class="shot" src="./screens/06-decision-submitted.png" alt="Decision submitted" />
+    </section>
+
+    <!-- 8 -->
+    <section class="slide" data-i="8">
+      <div class="kicker">Slide 9 · Federated learning</div>
+      <h2>Privacy-preserving model improvement</h2>
+      <p>Three banks train locally on partitioned synthetic rows, share parameter updates only, FedAvg aggregate, commit new <code>model_hash</code> to ledger.</p>
+      <img class="shot" src="./screens/07-federated.png" alt="Federated page" />
+    </section>
+
+    <!-- 9 -->
+    <section class="slide" data-i="9">
+      <div class="kicker">Slide 10 · FL round complete</div>
+      <h2>Model version bump on ledger</h2>
+      <img class="shot" src="./screens/08-federated-round.png" alt="FL round result" />
+    </section>
+
+    <!-- 10 -->
+    <section class="slide" data-i="10">
+      <div class="kicker">Slide 11 · Audit</div>
+      <h2>Compliance explorer</h2>
+      <p>Attestations (with ledger linkage) and analyst decisions in one place — the story regulators care about.</p>
+      <img class="shot" src="./screens/09-audit.png" alt="Audit" />
+    </section>
+
+    <!-- 11 -->
+    <section class="slide" data-i="11">
+      <div class="kicker">Slide 12 · Demo script</div>
+      <h2>5-minute interviewer path</h2>
+      <ol style="color:var(--muted);line-height:1.7">
+        <li>Case study metrics load from API</li>
+        <li>Playground: run <code>hash_abc123</code> — show L1→L2→L3 + ledger height</li>
+        <li>Open customer in Console → Analyst → submit decision</li>
+        <li>Federated → Run FL round → show model hash change</li>
+        <li>Audit → point at attestation + decision rows</li>
+      </ol>
+      <p class="meta">Video recording of this path: <a href="../video/e2e-workflow.mp4" style="color:var(--accent)">demo/video/e2e-workflow.mp4</a></p>
+    </section>
+
+    <div class="ctrl">
+      <button type="button" id="prev">← Prev</button>
+      <button type="button" id="next">Next →</button>
+      <span class="meta" id="pos"></span>
+    </div>
+  </div>
+  <script>
+    const slides = [...document.querySelectorAll('.slide')];
+    let i = 0;
+    const pos = document.getElementById('pos');
+    function show(n) {
+      i = (n + slides.length) % slides.length;
+      slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+      pos.textContent = `${i + 1} / ${slides.length}`;
+    }
+    document.getElementById('prev').onclick = () => show(i - 1);
+    document.getElementById('next').onclick = () => show(i + 1);
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') show(i + 1);
+      if (e.key === 'ArrowLeft') show(i - 1);
+    });
+    show(0);
+  </script>
+</body>
+</html>
